@@ -24,9 +24,15 @@ type Stacktrace struct {
 }
 
 // NewStacktrace creates a stacktrace using runtime.Callers.
-func NewStacktrace() *Stacktrace {
+// skipFrames (default is 1) parameter allowing to adjust the
+// amount of frames skipped in the trace.
+func NewStacktrace(skipFrames ...int) *Stacktrace {
+	var skip = 1
+	if len(skipFrames) == 1 {
+		skip = skipFrames[0]
+	}
 	pcs := make([]uintptr, 100)
-	n := runtime.Callers(1, pcs)
+	n := runtime.Callers(skip, pcs)
 
 	if n == 0 {
 		return nil
